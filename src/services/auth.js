@@ -11,12 +11,17 @@ export const AuthService = {
     });
 
     if (!response.ok) {
-      throw new Error("Échec de la connexion");
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Échec de la connexion");
     }
 
     const data = await response.json();
-    localStorage.setItem("token", data.token);
-    return data.user;
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      return data.user;
+    } else {
+      throw new Error("Token non reçu du serveur");
+    }
   },
 
   async register(credentials) {
@@ -29,23 +34,51 @@ export const AuthService = {
     });
 
     if (!response.ok) {
-      throw new Error("Échec de l'inscription");
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Échec de l'inscription");
     }
 
     const data = await response.json();
-    localStorage.setItem("token", data.token);
-    return data.user;
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      return data.user;
+    } else {
+      throw new Error("Token non reçu du serveur");
+    }
   },
 
   logout() {
     localStorage.removeItem("token");
+    // Nettoyer d'autres données si nécessaire
+    localStorage.removeItem("user");
   },
 
   getToken() {
     return localStorage.getItem("token");
   },
 
-  isAuthenticated() {
-    return !!this.getToken();
+  async isAuthenticated() {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      // Vérifier si le token est valide en faisant une requête à l'API
+      const response = await fetch(`${API_URL}/api/v1/articles`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        // Si le token n'est pas valide, déconnecter l'utilisateur
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Erreur lors de la vérification du token:", error);
+      return false;
+    }
   },
 };

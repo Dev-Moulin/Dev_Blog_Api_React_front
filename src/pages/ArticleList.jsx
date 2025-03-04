@@ -10,11 +10,19 @@ const ArticleList = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const data = await ArticleService.getAllArticles();
-        setArticles(data);
+        console.log("Début du chargement des articles");
+        const response = await ArticleService.getAllArticles();
+        console.log("Articles reçus:", response);
+
+        // S'assurer que articles est un tableau
+        const articlesArray = Array.isArray(response) ? response : [];
+        console.log("Articles formatés:", articlesArray);
+
+        setArticles(articlesArray);
         setLoading(false);
       } catch (err) {
-        setError("Impossible de charger les articles");
+        console.error("Erreur lors du chargement des articles:", err);
+        setError(err.message || "Impossible de charger les articles");
         setLoading(false);
       }
     };
@@ -55,35 +63,34 @@ const ArticleList = () => {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
-            <div
-              key={article.id}
-              className="bg-white overflow-hidden shadow rounded-lg"
-            >
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {article.title}
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  {article.content.substring(0, 150)}...
-                </p>
-                <Link
-                  to={`/articles/${article.id}`}
-                  className="text-indigo-600 hover:text-indigo-800"
-                >
-                  Lire la suite →
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {articles.length === 0 && (
+        {articles.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
-              Aucun article n'a été publié pour le moment.
-            </p>
+            <p className="text-gray-500 text-lg">Aucun article disponible</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <div
+                key={article.id}
+                className="bg-white overflow-hidden shadow rounded-lg"
+              >
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                    {article.title}
+                  </h2>
+                  <p className="text-gray-600 mb-4">
+                    {article.content.substring(0, 150)}
+                    {article.content.length > 150 ? "..." : ""}
+                  </p>
+                  <Link
+                    to={`/articles/${article.id}`}
+                    className="text-indigo-600 hover:text-indigo-800"
+                  >
+                    Lire la suite
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
