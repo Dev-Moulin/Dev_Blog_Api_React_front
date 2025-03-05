@@ -117,9 +117,16 @@ const ArticleList = () => {
                 className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg"
               >
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    {article.title}
-                  </h2>
+                  <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                      {article.title}
+                    </h2>
+                    {article.private && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                        Privé
+                      </span>
+                    )}
+                  </div>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">
                     {article.content.substring(0, 150)}
                     {article.content.length > 150 ? "..." : ""}

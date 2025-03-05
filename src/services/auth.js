@@ -11,7 +11,7 @@ export const AuthService = {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+      const error = await response.json();
       throw new Error(error.status?.message || "Échec de la connexion");
     }
 
@@ -49,12 +49,19 @@ export const AuthService = {
       body: JSON.stringify({ user: credentials }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.status?.message || "Échec de l'inscription");
+      console.error("Erreur de réponse:", data);
+      if (data.status?.message) {
+        throw new Error(data.status.message);
+      } else if (data.errors) {
+        throw new Error(data.errors.join(", "));
+      } else {
+        throw new Error("Échec de l'inscription");
+      }
     }
 
-    const data = await response.json();
     if (data.token) {
       localStorage.setItem("token", data.token);
       // Extraire l'ID de l'utilisateur du token JWT

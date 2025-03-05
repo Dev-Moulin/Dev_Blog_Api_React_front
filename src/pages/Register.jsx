@@ -11,20 +11,28 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (password !== passwordConfirmation) {
       setError("Les mots de passe ne correspondent pas");
       return;
     }
 
     try {
-      await AuthService.register({
+      const response = await AuthService.register({
         email,
         password,
         password_confirmation: passwordConfirmation,
       });
+      console.log("Inscription réussie:", response);
       navigate("/articles");
     } catch (err) {
-      setError("L'inscription a échoué. Veuillez réessayer.");
+      console.error("Erreur d'inscription:", err);
+      if (err.message && typeof err.message === "string") {
+        setError(err.message);
+      } else {
+        setError("L'inscription a échoué. Veuillez réessayer.");
+      }
     }
   };
 

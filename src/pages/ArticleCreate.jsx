@@ -5,13 +5,18 @@ import { ArticleService } from "../services/articles";
 const ArticleCreate = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await ArticleService.createArticle({ title, content });
+      await ArticleService.createArticle({
+        title,
+        content,
+        private: isPrivate,
+      });
       navigate("/articles");
     } catch (err) {
       setError("Impossible de créer l'article. Veuillez réessayer.");
@@ -69,6 +74,22 @@ const ArticleCreate = () => {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="private"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="private"
+                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+              >
+                Article privé (visible uniquement par vous)
+              </label>
             </div>
 
             <div className="flex justify-end">

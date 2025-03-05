@@ -13,6 +13,7 @@ const ArticleDetail = () => {
   const [editedArticle, setEditedArticle] = useState({
     title: "",
     content: "",
+    private: false,
   });
   const isAuthenticated = AuthService.getToken();
   const currentUserId = localStorage.getItem("userId");
@@ -22,7 +23,11 @@ const ArticleDetail = () => {
       try {
         const data = await ArticleService.getArticle(id);
         setArticle(data);
-        setEditedArticle({ title: data.title, content: data.content });
+        setEditedArticle({
+          title: data.title,
+          content: data.content,
+          private: data.private || false,
+        });
         setLoading(false);
       } catch (err) {
         setError("Article non trouvé");
@@ -70,10 +75,10 @@ const ArticleDetail = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setEditedArticle((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -146,6 +151,23 @@ const ArticleDetail = () => {
                   />
                 </div>
 
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="private"
+                    id="private"
+                    checked={editedArticle.private}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="private"
+                    className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                  >
+                    Article privé (visible uniquement par vous)
+                  </label>
+                </div>
+
                 <div className="flex justify-end space-x-4">
                   <button
                     type="button"
@@ -165,9 +187,16 @@ const ArticleDetail = () => {
             ) : (
               <>
                 <div className="flex justify-between items-start mb-6">
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                    {article.title}
-                  </h1>
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                      {article.title}
+                    </h1>
+                    {article.private && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100 mt-2">
+                        Article privé
+                      </span>
+                    )}
+                  </div>
                   {isOwner && (
                     <div className="flex space-x-4">
                       <button
