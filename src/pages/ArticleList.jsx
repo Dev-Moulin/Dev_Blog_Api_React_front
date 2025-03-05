@@ -34,9 +34,11 @@ const ArticleList = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <p className="text-xl">Chargement...</p>
+          <p className="text-xl text-gray-900 dark:text-gray-100">
+            Chargement...
+          </p>
         </div>
       </div>
     );
@@ -44,23 +46,25 @@ const ArticleList = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="bg-red-50 border-l-4 border-red-400 p-4">
-          <p className="text-red-700">{error}</p>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="bg-red-50 dark:bg-red-900 border-l-4 border-red-400 p-4">
+          <p className="text-red-700 dark:text-red-200">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Articles</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Articles
+          </h1>
           {isAuthenticated && (
             <Link
               to="/articles/new"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+              className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-600"
             >
               Nouvel Article
             </Link>
@@ -69,19 +73,21 @@ const ArticleList = () => {
 
         {articles.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Aucun article disponible</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
+              Aucun article disponible
+            </p>
             {!isAuthenticated && (
-              <p className="mt-4 text-gray-600">
+              <p className="mt-4 text-gray-600 dark:text-gray-300">
                 <Link
                   to="/login"
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
                 >
                   Connectez-vous
                 </Link>{" "}
                 ou{" "}
                 <Link
                   to="/register"
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
                 >
                   inscrivez-vous
                 </Link>{" "}
@@ -94,25 +100,25 @@ const ArticleList = () => {
             {articles.map((article) => (
               <div
                 key={article.id}
-                className="bg-white overflow-hidden shadow rounded-lg"
+                className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg"
               >
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     {article.title}
                   </h2>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
                     {article.content.substring(0, 150)}
                     {article.content.length > 150 ? "..." : ""}
                   </p>
                   <div className="flex justify-between items-center">
                     <Link
                       to={`/articles/${article.id}`}
-                      className="text-indigo-600 hover:text-indigo-800"
+                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
                     >
                       Lire la suite
                     </Link>
                     {article.user && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         par {article.user.email}
                       </span>
                     )}

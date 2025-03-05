@@ -22,8 +22,10 @@ const PrivateRoute = ({ children }) => {
   if (isAuthenticated === null) {
     // Afficher un état de chargement pendant la vérification
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <p className="text-xl text-gray-600">Chargement...</p>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-xl text-gray-600 dark:text-gray-300">
+          Chargement...
+        </p>
       </div>
     );
   }
@@ -33,7 +35,7 @@ const PrivateRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />

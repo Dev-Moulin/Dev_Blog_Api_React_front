@@ -18,6 +18,19 @@ export const AuthService = {
     const data = await response.json();
     if (data.token) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id);
+
+      // Restaurer le thème de l'utilisateur
+      const userTheme = localStorage.getItem(`theme_${data.user.id}`);
+      if (userTheme) {
+        if (userTheme === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+        localStorage.setItem("theme", userTheme);
+      }
+
       return data.user;
     } else {
       throw new Error("Token non reçu du serveur");
@@ -41,6 +54,12 @@ export const AuthService = {
     const data = await response.json();
     if (data.token) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id);
+
+      // Sauvegarder le thème actuel pour le nouvel utilisateur
+      const currentTheme = localStorage.getItem("theme") || "light";
+      localStorage.setItem(`theme_${data.user.id}`, currentTheme);
+
       return data.user;
     } else {
       throw new Error("Token non reçu du serveur");
@@ -48,9 +67,26 @@ export const AuthService = {
   },
 
   logout() {
+    const userId = localStorage.getItem("userId");
+    const currentTheme = localStorage.getItem("theme");
+
+    // Sauvegarder le thème actuel pour l'utilisateur avant la déconnexion
+    if (userId && currentTheme) {
+      localStorage.setItem(`theme_${userId}`, currentTheme);
+    }
+
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     // Nettoyer d'autres données si nécessaire
     localStorage.removeItem("user");
+
+    // Restaurer le thème par défaut ou le dernier thème utilisé
+    const defaultTheme = localStorage.getItem("theme") || "light";
+    if (defaultTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   },
 
   getToken() {
