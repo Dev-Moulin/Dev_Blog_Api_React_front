@@ -1,51 +1,63 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthService } from "../services/auth";
 
 const Navbar = () => {
-  const isAuthenticated = AuthService.isAuthenticated();
+  const navigate = useNavigate();
+  const isAuthenticated = AuthService.getToken();
 
   const handleLogout = () => {
     AuthService.logout();
-    window.location.reload();
+    navigate("/articles");
   };
 
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-white font-bold text-xl">MonBlog</div>
-        <div className="space-x-4">
-          <Link to="/" className="text-white hover:text-gray-300">
-            Accueil
-          </Link>
-          <Link to="/articles" className="text-white hover:text-gray-300">
-            Articles
-          </Link>
-          {!isAuthenticated ? (
-            <>
-              <Link to="/login" className="text-white hover:text-gray-300">
-                Connexion
-              </Link>
-              <Link to="/register" className="text-white hover:text-gray-300">
-                Inscription
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/articles/new"
-                className="text-white hover:text-gray-300"
-              >
-                Nouvel Article
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="text-white hover:text-gray-300"
-              >
-                Déconnexion
-              </button>
-            </>
-          )}
+    <nav className="bg-indigo-600">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-white font-bold text-xl">
+              Blog
+            </Link>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <Link to="/articles" className="text-white hover:text-gray-200">
+              Articles
+            </Link>
+
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/articles/new"
+                  className="text-white hover:text-gray-200"
+                >
+                  Nouvel Article
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-white hover:text-gray-200"
+                >
+                  Déconnexion
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md border border-transparent hover:border-white"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md bg-indigo-500 hover:bg-indigo-400"
+                >
+                  Inscription
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

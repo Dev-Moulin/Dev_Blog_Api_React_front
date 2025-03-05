@@ -1,46 +1,189 @@
-# Getting Started with Create React App
+# Blog Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Interface utilisateur React pour notre application de blog.
 
-## Available Scripts
+## Technologies utilisées
 
-In the project directory, you can run:
+- React 18
+- React Router 6
+- Tailwind CSS
+- Fetch API pour les requêtes HTTP
 
-### `npm start`
+## Prérequis
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Node.js (version 16 ou supérieure)
+- npm ou yarn
+- L'API backend doit tourner sur le port 3001
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Cloner le repository
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone <votre-repo>
+cd blog-front
+```
 
-### `npm run build`
+2. Installer les dépendances
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Lancer l'application en développement
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm start
+```
 
-### `npm run eject`
+L'application sera accessible sur http://localhost:3000
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Fonctionnalités
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Authentification (inscription/connexion)
+- Liste des articles
+- Création d'articles
+- Modification d'articles (pour les propriétaires)
+- Suppression d'articles (pour les propriétaires)
+- Interface responsive avec Tailwind CSS
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Structure du projet
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+src/
+├── components/        # Composants réutilisables
+├── pages/            # Pages/Routes principales
+├── services/         # Services API
+├── App.jsx           # Composant racine
+└── index.jsx         # Point d'entrée
+```
 
-## Learn More
+## Scripts disponibles
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- `npm start` - Lance l'application en mode développement
+- `npm test` - Lance les tests
+- `npm run build` - Crée une version de production
+- `npm run eject` - Éjecte la configuration CRA (irréversible)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Configuration de l'environnement
+
+L'application utilise les variables d'environnement suivantes :
+
+- `REACT_APP_API_URL` - URL de l'API (par défaut: http://localhost:3001)
+
+## Styles
+
+Le projet utilise Tailwind CSS pour le styling. La configuration se trouve dans :
+
+- `tailwind.config.js`
+- `postcss.config.js`
+
+## Tests
+
+Les tests sont écrits avec Jest et React Testing Library.
+Pour lancer les tests :
+
+```bash
+npm test
+```
+
+## Build de production
+
+Pour créer une version de production :
+
+```bash
+npm run build
+```
+
+Le build sera créé dans le dossier `build/`.
+
+## Déploiement
+
+Instructions pour le déploiement à venir...
+
+## Contribution
+
+1. Forker le projet
+2. Créer une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. Commiter vos changements (`git commit -am 'Ajout d'une nouvelle fonctionnalité'`)
+4. Pusher vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
+5. Créer une Pull Request
+
+## Bonnes pratiques
+
+- Utiliser les composants fonctionnels et les hooks
+- Suivre les conventions de nommage React
+- Documenter les composants et les fonctions importantes
+- Écrire des tests pour les nouvelles fonctionnalités
+
+## Communication avec l'API
+
+### Services API
+
+Le frontend utilise des services dédiés pour communiquer avec l'API :
+
+1. **AuthService** (`src/services/auth.js`) :
+
+```javascript
+// Exemple de login
+const response = await fetch("http://localhost:3001/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ user: credentials }),
+});
+```
+
+2. **ArticleService** (`src/services/articles.js`) :
+
+```javascript
+// Exemple de récupération d'articles
+const response = await fetch("http://localhost:3001/api/v1/articles", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  },
+});
+```
+
+### Gestion des Tokens
+
+- Le token JWT est stocké dans `localStorage`
+- Ajouté automatiquement aux headers des requêtes authentifiées
+- Vérifié à chaque requête protégée
+
+### Flux de Communication
+
+1. **Authentification** :
+
+   - L'utilisateur remplit le formulaire de connexion
+   - Le frontend envoie les credentials à `/login`
+   - L'API renvoie un token JWT
+   - Le token est stocké dans `localStorage`
+
+2. **Requêtes Authentifiées** :
+
+   - Le token est récupéré du `localStorage`
+   - Ajouté dans le header `Authorization`
+   - L'API valide le token
+   - Renvoie les données ou une erreur 401
+
+3. **Gestion des Erreurs** :
+   - 401 : Redirection vers login
+   - 404 : Page d'erreur
+   - 500 : Message d'erreur utilisateur
+
+### Exemple de Cycle Complet
+
+```javascript
+// 1. Login
+const token = await AuthService.login(credentials);
+
+// 2. Création d'article
+const newArticle = await ArticleService.createArticle({
+  title: "Titre",
+  content: "Contenu",
+});
+
+// 3. Récupération des articles
+const articles = await ArticleService.getAllArticles();
+```

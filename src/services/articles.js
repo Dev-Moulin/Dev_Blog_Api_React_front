@@ -1,6 +1,6 @@
 import { AuthService } from "./auth";
 
-const API_URL = "http://localhost:3000/api/v1";
+const API_URL = "http://localhost:3001/api/v1";
 
 export const ArticleService = {
   async getAllArticles() {

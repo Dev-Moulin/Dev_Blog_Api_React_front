@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArticleService } from "../services/articles";
+import { AuthService } from "../services/auth";
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ const ArticleDetail = () => {
     title: "",
     content: "",
   });
+  const isAuthenticated = AuthService.getToken();
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -84,12 +86,16 @@ const ArticleDetail = () => {
     );
   }
 
+  const isOwner =
+    isAuthenticated &&
+    article.user_id === parseInt(localStorage.getItem("userId"));
+
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="p-6">
-            {isEditing ? (
+            {isEditing && isOwner ? (
               <form onSubmit={handleEdit} className="space-y-6">
                 <div>
                   <label
@@ -149,20 +155,22 @@ const ArticleDetail = () => {
                   <h1 className="text-3xl font-bold text-gray-900">
                     {article.title}
                   </h1>
-                  <div className="flex space-x-4">
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="text-indigo-600 hover:text-indigo-800"
-                    >
-                      Modifier
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
+                  {isOwner && (
+                    <div className="flex space-x-4">
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        Modifier
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="prose max-w-none">
@@ -176,6 +184,9 @@ const ArticleDetail = () => {
                     <div className="text-sm text-gray-500">
                       Publié le{" "}
                       {new Date(article.created_at).toLocaleDateString("fr-FR")}
+                      {article.user && (
+                        <span className="ml-2">par {article.user.email}</span>
+                      )}
                     </div>
                     <button
                       onClick={() => navigate("/articles")}

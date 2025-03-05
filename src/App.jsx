@@ -38,27 +38,13 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/articles"
-          element={
-            <PrivateRoute>
-              <ArticleList />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/articles" element={<ArticleList />} />
+        <Route path="/articles/:id" element={<ArticleDetail />} />
         <Route
           path="/articles/new"
           element={
             <PrivateRoute>
               <ArticleCreate />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/articles/:id"
-          element={
-            <PrivateRoute>
-              <ArticleDetail />
             </PrivateRoute>
           }
         />

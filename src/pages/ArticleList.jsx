@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArticleService } from "../services/articles";
+import { AuthService } from "../services/auth";
 
 const ArticleList = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const isAuthenticated = AuthService.getToken();
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -55,17 +57,37 @@ const ArticleList = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Articles</h1>
-          <Link
-            to="/articles/new"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
-          >
-            Nouvel Article
-          </Link>
+          {isAuthenticated && (
+            <Link
+              to="/articles/new"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+            >
+              Nouvel Article
+            </Link>
+          )}
         </div>
 
         {articles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">Aucun article disponible</p>
+            {!isAuthenticated && (
+              <p className="mt-4 text-gray-600">
+                <Link
+                  to="/login"
+                  className="text-indigo-600 hover:text-indigo-800"
+                >
+                  Connectez-vous
+                </Link>{" "}
+                ou{" "}
+                <Link
+                  to="/register"
+                  className="text-indigo-600 hover:text-indigo-800"
+                >
+                  inscrivez-vous
+                </Link>{" "}
+                pour créer votre premier article !
+              </p>
+            )}
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -82,12 +104,19 @@ const ArticleList = () => {
                     {article.content.substring(0, 150)}
                     {article.content.length > 150 ? "..." : ""}
                   </p>
-                  <Link
-                    to={`/articles/${article.id}`}
-                    className="text-indigo-600 hover:text-indigo-800"
-                  >
-                    Lire la suite
-                  </Link>
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to={`/articles/${article.id}`}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      Lire la suite
+                    </Link>
+                    {article.user && (
+                      <span className="text-sm text-gray-500">
+                        par {article.user.email}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
