@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArticleService } from "../services/articles";
 import { AuthService } from "../services/auth";
 
@@ -7,7 +7,9 @@ const ArticleList = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
   const isAuthenticated = AuthService.getToken();
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -31,6 +33,18 @@ const ArticleList = () => {
 
     fetchArticles();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
+      try {
+        await ArticleService.deleteArticle(id);
+        // Mettre à jour la liste des articles après la suppression
+        setArticles(articles.filter((article) => article.id !== id));
+      } catch (err) {
+        setError("Impossible de supprimer l'article");
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -111,12 +125,31 @@ const ArticleList = () => {
                     {article.content.length > 150 ? "..." : ""}
                   </p>
                   <div className="flex justify-between items-center">
-                    <Link
-                      to={`/articles/${article.id}`}
-                      className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
-                    >
-                      Lire la suite
-                    </Link>
+                    <div className="flex space-x-4">
+                      <Link
+                        to={`/articles/${article.id}`}
+                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                      >
+                        Lire la suite
+                      </Link>
+                      {isAuthenticated &&
+                        article.user_id === parseInt(currentUserId) && (
+                          <>
+                            <Link
+                              to={`/articles/${article.id}`}
+                              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                            >
+                              Modifier
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(article.id)}
+                              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                            >
+                              Supprimer
+                            </button>
+                          </>
+                        )}
+                    </div>
                     {article.user && (
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         par {article.user.email}

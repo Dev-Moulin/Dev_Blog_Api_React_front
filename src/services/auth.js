@@ -12,16 +12,19 @@ export const AuthService = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || "Échec de la connexion");
+      throw new Error(error.status?.message || "Échec de la connexion");
     }
 
     const data = await response.json();
     if (data.token) {
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id);
+      // Extraire l'ID de l'utilisateur du token JWT
+      const tokenData = JSON.parse(atob(data.token.split(".")[1]));
+      const userId = tokenData.sub;
+      localStorage.setItem("userId", userId);
 
       // Restaurer le thème de l'utilisateur
-      const userTheme = localStorage.getItem(`theme_${data.user.id}`);
+      const userTheme = localStorage.getItem(`theme_${userId}`);
       if (userTheme) {
         if (userTheme === "dark") {
           document.documentElement.classList.add("dark");
@@ -31,7 +34,7 @@ export const AuthService = {
         localStorage.setItem("theme", userTheme);
       }
 
-      return data.user;
+      return data.data;
     } else {
       throw new Error("Token non reçu du serveur");
     }
@@ -48,19 +51,22 @@ export const AuthService = {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.message || "Échec de l'inscription");
+      throw new Error(error.status?.message || "Échec de l'inscription");
     }
 
     const data = await response.json();
     if (data.token) {
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id);
+      // Extraire l'ID de l'utilisateur du token JWT
+      const tokenData = JSON.parse(atob(data.token.split(".")[1]));
+      const userId = tokenData.sub;
+      localStorage.setItem("userId", userId);
 
       // Sauvegarder le thème actuel pour le nouvel utilisateur
       const currentTheme = localStorage.getItem("theme") || "light";
-      localStorage.setItem(`theme_${data.user.id}`, currentTheme);
+      localStorage.setItem(`theme_${userId}`, currentTheme);
 
-      return data.user;
+      return data.data;
     } else {
       throw new Error("Token non reçu du serveur");
     }

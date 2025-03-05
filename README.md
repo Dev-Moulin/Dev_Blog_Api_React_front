@@ -187,3 +187,27 @@ const newArticle = await ArticleService.createArticle({
 // 3. Récupération des articles
 const articles = await ArticleService.getAllArticles();
 ```
+
+## Vérifier l'Authentification dans le Navigateur
+
+Pour vérifier l'état de l'authentification et le token JWT dans le navigateur :
+
+1. Ouvrez les DevTools (F12 ou Clic droit > Inspecter)
+2. Allez dans l'onglet "Application"
+3. Dans le panneau de gauche, développez "Local Storage"
+4. Cliquez sur "http://localhost:3000"
+
+Vous devriez voir les éléments suivants :
+
+- `token` : Votre token JWT actuel
+- `userId` : L'ID de l'utilisateur connecté
+- `theme` : Le thème actuel de l'application
+
+Pour tester l'authentification :
+
+1. Déconnectez-vous (le token devrait disparaître)
+2. Connectez-vous (un nouveau token devrait apparaître)
+3. Vérifiez que vous pouvez :
+   - Voir les articles sans être connecté
+   - Créer/Modifier/Supprimer des articles uniquement en étant connecté
+   - Modifier/Supprimer uniquement vos propres articles

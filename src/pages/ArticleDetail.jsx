@@ -15,6 +15,7 @@ const ArticleDetail = () => {
     content: "",
   });
   const isAuthenticated = AuthService.getToken();
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -33,18 +34,28 @@ const ArticleDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
+    if (!isAuthenticated || article.user_id !== parseInt(currentUserId)) {
+      setError("Vous n'êtes pas autorisé à supprimer cet article");
+      return;
+    }
+
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
       try {
         await ArticleService.deleteArticle(id);
         navigate("/articles");
       } catch (err) {
-        setError("Impossible de supprimer l'article");
+        setError(err.message || "Impossible de supprimer l'article");
       }
     }
   };
 
   const handleEdit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated || article.user_id !== parseInt(currentUserId)) {
+      setError("Vous n'êtes pas autorisé à modifier cet article");
+      return;
+    }
+
     try {
       const updatedArticle = await ArticleService.updateArticle(
         id,
@@ -54,7 +65,7 @@ const ArticleDetail = () => {
       setIsEditing(false);
       setError("");
     } catch (err) {
-      setError("Impossible de mettre à jour l'article");
+      setError(err.message || "Impossible de mettre à jour l'article");
     }
   };
 
